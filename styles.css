@@ -1,0 +1,363 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background: #f0f0f0;
+    font-family: Arial, sans-serif;
+}
+
+.style-selector {
+    margin-bottom: 20px;
+}
+
+.style-selector select {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+/* Hide all clocks by default */
+.clock {
+    display: none;
+}
+
+/* Show active clock */
+.clock.active {
+    display: flex;
+}
+
+/* -------------------------
+Analog Clock Styles
+------------------------- */
+.analog-clock {
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: white;
+    border: 10px solid #333;
+    position: relative;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.analog-clock .hand {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform-origin: bottom;
+    background: #333;
+}
+
+.analog-clock .hour {
+    width: 4px;
+    height: 25%;
+    background: #000000;
+}
+
+.analog-clock .minute {
+    width: 4px;
+    height: 40%;
+    background: #666;
+}
+
+.analog-clock .second {
+    width: 2px;
+    height: 45%;
+    background: #ff0000;
+}
+
+.analog-clock .center-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #000000;
+    transform: translate(-40%, -50%);
+}
+
+/* -------------------------
+Digital Clock Styles
+------------------------- */
+.digital-clock {
+    background: black;
+    color: white;
+    padding: 20px 40px;
+    border-radius: 15px;
+    align-items: center;
+    gap: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.digital-clock div {
+    text-align: center;
+}
+
+.digital-clock span {
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.digital-clock p {
+    font-size: 12px;
+    opacity: 0.7;
+    margin: 0;
+}
+
+/* -------------------------
+Flip Clock Styles
+------------------------- */
+/* Flip Clock container */
+.flip-clock {
+    gap: 20px;
+    /* Increased from 5px */
+    transform-style: preserve-3d;
+}
+
+.flip-card {
+    position: relative;
+    width: 160px;
+    /* Reduced from 320px */
+    height: 240px;
+    /* Reduced from 480px */
+    perspective: 600px;
+    /* Reduced from 1200px */
+}
+
+.flip-card .top,
+.flip-card .bottom,
+.flip-card .next-top,
+.flip-card .next-bottom {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    background: white;
+    color: black;
+    text-align: center;
+    font-size: 120px;
+    /* Reduced from 240px */
+    font-weight: bold;
+    line-height: 120px;
+    /* Reduced from 240px */
+    border-radius: 20px;
+    /* Reduced from 40px */
+}
+
+/* Update flip card spacing */
+.flip-card .top,
+.flip-card .next-top {
+    top: 0;
+    border-bottom: none;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.flip-card .bottom,
+.flip-card .next-bottom {
+    bottom: 0;
+    border-top: none;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+/* Add gap between halves */
+.flip-card .top,
+.flip-card .next-top {
+    height: 30%;
+    overflow: hidden;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    font-size: 120px;
+    line-height: 120px;
+}
+
+.flip-card .bottom,
+.flip-card .next-bottom {
+    height: 30%;
+    overflow: hidden;
+    top: 32%;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    font-size: 120px;
+    line-height: 100px;
+}
+
+/* Adjust number positioning for the new proportions */
+.flip-card .top .top-number,
+.flip-card .next-top .top-number {
+    position: absolute;
+    width: 100%;
+    height: 120px;
+    /* Reduced from 240px */
+    bottom: -60px;
+    /* Reduced from -60px */
+}
+
+/* Update bottom number positioning */
+.flip-card .bottom .bottom-number,
+.flip-card .next-bottom .bottom-number {
+    position: absolute;
+    width: 100%;
+    height: 120px;
+    /* Reduced from 240px */
+    font-size: 120px;
+    /* Reduced from 240px */
+    top: -1%;
+    /* Adjust position within smaller container */
+    line-height: 0;
+}
+
+/* Add shadow for depth */
+.flip-card .top,
+.flip-card .next-top {
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.flip-card .bottom,
+.flip-card .next-bottom {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.flip-card .top {
+    top: 0;
+    border-bottom: 2px solid #ddd;
+}
+
+.flip-card .bottom {
+    bottom: 0;
+
+}
+
+.flip-card .next-top {
+    top: 0;
+    transform-origin: bottom;
+    transform: rotateX(90deg);
+    opacity: 0;
+}
+
+.flip-card .next-bottom {
+    bottom: 0;
+    opacity: 0;
+}
+
+.flip-card.flip .top {
+    transform-origin: bottom;
+    animation: flipTop 0.6s ease-in forwards;
+}
+
+.flip-card.flip .next-top {
+    animation: flipNextTop 0.6s ease-out forwards;
+}
+
+.flip-card.flip .bottom {
+    opacity: 0;
+}
+
+.flip-card.flip .next-bottom {
+    opacity: 1;
+}
+
+.flip-card .top,
+.flip-card .next-top {
+    z-index: 2;
+    /* Ensure top card is above bottom */
+    transform-origin: bottom;
+    backface-visibility: hidden;
+}
+
+.flip-card .bottom,
+.flip-card .next-bottom {
+    z-index: 1;
+    /* Keep bottom below */
+    backface-visibility: hidden;
+}
+
+@keyframes flipTop {
+    0% {
+        transform: rotateX(0deg);
+        z-index: 2;
+    }
+
+    100% {
+        transform: rotateX(-180deg);
+        z-index: 0;
+    }
+}
+
+@keyframes flipNextTop {
+    0% {
+        transform: rotateX(180deg);
+        opacity: 0;
+        z-index: 1;
+    }
+
+    100% {
+        transform: rotateX(0deg);
+        opacity: 1;
+        z-index: 2;
+    }
+}
+
+/* Update separator size */
+.separator {
+    font-size: 120px;
+    /* Reduced from 240px */
+    margin: 0 10px;
+    /* Reduced from 20px */
+}
+
+/* -------------------------
+Circular Clock Styles
+------------------------- */
+.circular-clock {
+    gap: 20px;
+}
+
+.circular-clock .circle {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.circular-clock svg {
+    transform: rotate(-90deg);
+}
+
+.circular-clock circle {
+    fill: none;
+    stroke-width: 6;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.5s;
+}
+
+/* Background circles */
+.circular-clock .hours circle:nth-child(1),
+.circular-clock .minutes circle:nth-child(1),
+.circular-clock .seconds circle:nth-child(1) {
+    stroke: #333333;
+}
+
+/* Animated circles */
+.circular-clock .hours circle:nth-child(2) {
+    stroke: #ff3267;
+}
+
+.circular-clock .minutes circle:nth-child(2) {
+    stroke: #ffcc00;
+}
+
+.circular-clock .seconds circle:nth-child(2) {
+    stroke: #00ff00;
+}
+
+.circular-clock .text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    font-weight: bold;
+}

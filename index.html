@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Multi-Style Clock</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="style-selector">
+        <select id="clockStyle">
+            <option value="analog">Analog Clock</option>
+            <option value="digital">Modern Digital</option>
+            <option value="flip">Flip Clock</option>
+            <option value="circular">Circular Clock</option>
+        </select>
+    </div>
+
+    <div id="clockContainer">
+        <!-- Analog Clock -->
+        <div class="clock analog-clock">
+            <div class="hand hour"></div>
+            <div class="hand minute"></div>
+            <div class="hand second"></div>
+            <div class="center-dot"></div>
+        </div>
+
+        <!-- Modern Digital Clock -->
+        <div class="clock digital-clock">
+            <div>
+                <span id="day">MON</span>
+                <p>DAY</p>
+            </div>
+            <span>:</span>
+            <div>
+                <span id="hours">00</span>
+                <p>HOURS</p>
+            </div>
+            <span>:</span>
+            <div>
+                <span id="minutes">00</span>
+                <p>MINUTES</p>
+            </div>
+            <span>:</span>
+            <div>
+                <span id="seconds">00</span>
+                <p>SECONDS</p>
+            </div>
+        </div>
+
+        <!-- Flip Clock -->
+        <div class="clock flip-clock">
+            <div class="flip-card" id="flip-hours">
+                <div class="top">
+                    <div class="top-number">00</div>
+                </div>
+                <div class="bottom">
+                    <div class="bottom-number">00</div>
+                </div>
+                <div class="next-top">
+                    <div class="top-number">00</div>
+                </div>
+                <div class="next-bottom">
+                    <div class="bottom-number">00</div>
+                </div>
+            </div>
+
+            <span class="separator">:</span>
+
+            <div class="flip-card" id="flip-minutes">
+                <div class="top">
+                    <div class="top-number">00</div>
+                </div>
+                <div class="bottom">
+                    <div class="bottom-number">00</div>
+                </div>
+                <div class="next-top">
+                    <div class="top-number">00</div>
+                </div>
+                <div class="next-bottom">
+                    <div class="bottom-number">00</div>
+                </div>
+            </div>
+
+            <span class="separator">:</span>
+
+            <div class="flip-card" id="flip-seconds">
+                <div class="top">
+                    <div class="top-number">00</div>
+                </div>
+                <div class="bottom">
+                    <div class="bottom-number">00</div>
+                </div>
+                <div class="next-top">
+                    <div class="top-number">00</div>
+                </div>
+                <div class="next-bottom">
+                    <div class="bottom-number">00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Circular Clock -->
+        <div class="clock circular-clock">
+            <div class="circle hours">
+                <svg width="100" height="100">
+                    <circle cx="50" cy="50" r="45" stroke="#333" stroke-width="6"></circle>
+                    <circle cx="50" cy="50" r="45" stroke-dasharray="0 283"></circle>
+                </svg>
+                <div class="text" id="circular-hours">00</div>
+            </div>
+            <div class="circle minutes">
+                <svg width="100" height="100">
+                    <circle cx="50" cy="50" r="45" stroke="#333" stroke-width="6"></circle>
+                    <circle cx="50" cy="50" r="45" stroke-dasharray="0 283"></circle>
+                </svg>
+                <div class="text" id="circular-minutes">00</div>
+            </div>
+            <div class="circle seconds">
+                <svg width="100" height="100">
+                    <circle cx="50" cy="50" r="45" stroke="#333" stroke-width="6"></circle>
+                    <circle cx="50" cy="50" r="45" stroke-dasharray="0 283"></circle>
+                </svg>
+                <div class="text" id="circular-seconds">00</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
