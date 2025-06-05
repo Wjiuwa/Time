@@ -15,6 +15,8 @@
             <option value="digital">Modern Digital</option>
             <option value="flip">Flip Clock</option>
             <option value="circular">Circular Clock</option>
+            <option value="hourglass">Hourglass Clock</option>
+
         </select>
     </div>
 
@@ -126,6 +128,40 @@
                 <div class="text" id="circular-seconds">00</div>
             </div>
         </div>
+
+        <!-- Hourglass Clock -->
+        <div class="clock hourglass-clock active">
+            <div class="hourglass">
+                <!-- Glass frame and wooden caps -->
+                <div class="glass-frame"></div>
+                <div class="wood-cap top"></div>
+                <div class="wood-cap bottom"></div>
+                
+                <!-- Glass highlights -->
+                <div class="glass-highlight"></div>
+                <div class="glass-highlight bottom"></div>
+                
+                <!-- Chambers -->
+                <div class="chamber top-chamber">
+                    <div class="sand top-sand"></div>
+                </div>
+                
+                <div class="neck">
+                    <div class="sand-stream"></div>
+                </div>
+                
+                <div class="chamber bottom-chamber">
+                    <div class="sand bottom-sand"></div>
+                </div>
+            </div>
+            
+            <div class="time-display" id="current-time">00:00:00</div>
+            <div class="progress-info" id="progress-info">Hour Progress: 0%</div>
+            <div class="hour-dots" id="hourDots"></div>
+        </div>
+
+
+
     </div>
 
     <script src="script.js"></script>

@@ -1,13 +1,37 @@
 body {
+    margin: 0;
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Arial', sans-serif;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    margin: 0;
-    background: #f0f0f0;
-    font-family: Arial, sans-serif;
+    flex-direction: column;
 }
+
+ .clock-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .clock {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .clock.active {
+            display: flex;
+        }
 
 .style-selector {
     margin-bottom: 20px;
@@ -361,3 +385,190 @@ Circular Clock Styles
     font-size: 20px;
     font-weight: bold;
 }
+
+ /* -------------------------
+         Hourglass Clock Styles
+         ------------------------- */
+        .hourglass-clock {
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 10px;
+        }
+
+        /* Container holding both chambers */
+        .hourglass {
+            position: relative;
+            width: 100px;
+            height: 220px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Each "chamber" is clipped into a trapezoid that meets in the middle */
+        .chamber {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            overflow: hidden;
+        }
+
+        /* Top chamber: inverted trapezoid */
+        .top-chamber {
+            clip-path: polygon(0 0, 100% 0, 75% 100%, 25% 100%);
+            border: 4px solid #444;
+            border-bottom: none;
+            background: transparent;
+        }
+
+        /* Bottom chamber: normal trapezoid */
+        .bottom-chamber {
+            clip-path: polygon(25% 0, 75% 0, 100% 100%, 0 100%);
+            border: 4px solid #444;
+            border-top: none;
+            background: transparent;
+        }
+
+        /* Narrow neck between chambers (just a thin rectangle) */
+        .hourglass .neck {
+            position: absolute;
+            top: calc(50% - 2px);
+            width: 12px;
+            height: 4px;
+            background: #444;
+            z-index: 1;
+        }
+
+        /* The "sand" inside top and bottom: absolutely positioned and animated by JS */
+        .sand {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            background-color: #f4c542;
+            transition: height 1s linear;
+            z-index: 0;
+        }
+
+        /* Top‐chamber sand starts full (100%) and shrinks downward */
+        .top-sand {
+            bottom: 0;
+            height: 100%; /* JS will override */
+        }
+
+        /* Bottom‐chamber sand starts empty (0%) and grows upward */
+        .bottom-sand {
+            top: 0;
+            height: 0%;   /* JS will override */
+        }
+
+        /* Falling sand particles */
+        .sand-particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background-color: #f4c542;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Hour‐dots container */
+        .hour-dots {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            max-width: 120px;
+        }
+
+        /* Each hour dot is a small circle */
+        .hour-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #333;
+            border-radius: 50%;
+            opacity: 0.8;
+        }
+
+        .style-selector {
+            margin-top: 20px;
+        }
+
+        .style-selector select {
+            padding: 10px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+        }
+
+        .style-selector select option {
+            background: #333;
+            color: white;
+        }
+
+        /* Circular Clock Styles */
+        .circular-clock {
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .circular-time {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .circle {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .circle svg {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            transform: rotate(-90deg);
+        }
+
+        .circle svg circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+
+        .circle svg circle:first-child {
+            stroke: rgba(255, 255, 255, 0.2);
+        }
+
+        .circle.hours svg circle:nth-child(2) {
+            stroke: #ff6b6b;
+            stroke-dasharray: 0 283;
+            transition: stroke-dasharray 0.3s ease;
+        }
+
+        .circle.minutes svg circle:nth-child(2) {
+            stroke: #4ecdc4;
+            stroke-dasharray: 0 283;
+            transition: stroke-dasharray 0.3s ease;
+        }
+
+        .circle.seconds svg circle:nth-child(2) {
+            stroke: #45b7d1;
+            stroke-dasharray: 0 283;
+            transition: stroke-dasharray 0.3s ease;
+        }
+
+        .circle-text {
+            position: relative;
+            z-index: 1;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
