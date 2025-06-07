@@ -10,51 +10,74 @@ body {
     flex-direction: column;
 }
 
- .clock-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
+.clock-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 400px;
+    min-height: 400px;
+    overflow: hidden;
+}
 
-        .clock {
-            display: none;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-size: 2rem;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
+.clock {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    transition: opacity 0.5s ease-in-out;
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+}
 
-        .clock.active {
-            display: flex;
-        }
+.clock.active {
+    display: flex;
+    opacity: 1;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+}
 
 .style-selector {
     margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 .style-selector select {
     padding: 10px;
     font-size: 16px;
-    border-radius: 5px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    appearance: none;
+    cursor: pointer;
+    text-align: center;
+    padding-right: 30px;
 }
 
-/* Hide all clocks by default */
-.clock {
-    display: none;
-}
-
-/* Show active clock */
-.clock.active {
-    display: flex;
+.style-selector select option {
+    background: #333;
+    color: white;
 }
 
 /* -------------------------
-Analog Clock Styles
+Analog Clock Styles (No Change)
 ------------------------- */
 .analog-clock {
     width: 300px;
@@ -62,8 +85,7 @@ Analog Clock Styles
     border-radius: 50%;
     background: white;
     border: 10px solid #333;
-    position: relative;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
 
 .analog-clock .hand {
@@ -72,23 +94,24 @@ Analog Clock Styles
     left: 50%;
     transform-origin: bottom;
     background: #333;
+    transition: transform 0.3s ease-in-out;
 }
 
 .analog-clock .hour {
-    width: 4px;
+    width: 6px;
     height: 25%;
-    background: #000000;
+    background: #000;
 }
 
 .analog-clock .minute {
     width: 4px;
-    height: 40%;
+    height: 35%;
     background: #666;
 }
 
 .analog-clock .second {
     width: 2px;
-    height: 45%;
+    height: 40%;
     background: #ff0000;
 }
 
@@ -99,21 +122,28 @@ Analog Clock Styles
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: #000000;
-    transform: translate(-40%, -50%);
+    background: #000;
+    transform: translate(-50%, -50%);
+    z-index: 10;
 }
 
 /* -------------------------
-Digital Clock Styles
+Digital Clock Styles (No Change)
 ------------------------- */
 .digital-clock {
-    background: black;
-    color: white;
+    background: rgba(0, 0, 0, 0.8);
+    color: #00ff00;
     padding: 20px 40px;
     border-radius: 15px;
-    align-items: center;
-    gap: 20px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: baseline;
+    gap: 15px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.6);
+    font-family: 'Share Tech Mono', monospace;
+    text-shadow: 0 0 5px #00ff00;
+    width: auto;
+    height: auto;
+    max-width: 90%;
 }
 
 .digital-clock div {
@@ -121,34 +151,38 @@ Digital Clock Styles
 }
 
 .digital-clock span {
-    font-size: 40px;
+    font-size: 3.5rem;
     font-weight: bold;
+    display: block;
 }
 
 .digital-clock p {
-    font-size: 12px;
-    opacity: 0.7;
-    margin: 0;
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin: 5px 0 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 /* -------------------------
-Flip Clock Styles
+Flip Clock Styles (No Change)
 ------------------------- */
-/* Flip Clock container */
 .flip-clock {
-    gap: 20px;
-    /* Increased from 5px */
+    display: flex;
+    gap: 15px;
     transform-style: preserve-3d;
+    perspective: 500px;
+    width: auto;
+    height: auto;
 }
 
 .flip-card {
     position: relative;
-    width: 160px;
-    /* Reduced from 320px */
-    height: 240px;
-    /* Reduced from 480px */
-    perspective: 600px;
-    /* Reduced from 1200px */
+    width: 80px;
+    height: 120px;
+    perspective: 500px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .flip-card .top,
@@ -158,117 +192,86 @@ Flip Clock Styles
     position: absolute;
     width: 100%;
     height: 50%;
-    background: white;
-    color: black;
+    background: linear-gradient(to bottom, #333, #222);
+    color: #eee;
     text-align: center;
-    font-size: 120px;
-    /* Reduced from 240px */
+    font-size: 3rem;
     font-weight: bold;
     line-height: 120px;
-    /* Reduced from 240px */
-    border-radius: 20px;
-    /* Reduced from 40px */
+    border-radius: 10px;
+    overflow: hidden;
 }
 
-/* Update flip card spacing */
 .flip-card .top,
 .flip-card .next-top {
     top: 0;
-    border-bottom: none;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .flip-card .bottom,
 .flip-card .next-bottom {
     bottom: 0;
-    border-top: none;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
-/* Add gap between halves */
-.flip-card .top,
-.flip-card .next-top {
-    height: 30%;
-    overflow: hidden;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    font-size: 120px;
-    line-height: 120px;
-}
-
-.flip-card .bottom,
-.flip-card .next-bottom {
-    height: 30%;
-    overflow: hidden;
-    top: 32%;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    font-size: 120px;
-    line-height: 100px;
-}
-
-/* Adjust number positioning for the new proportions */
 .flip-card .top .top-number,
 .flip-card .next-top .top-number {
     position: absolute;
     width: 100%;
-    height: 120px;
-    /* Reduced from 240px */
-    bottom: -60px;
-    /* Reduced from -60px */
+    height: 100%;
+    bottom: 0;
+    line-height: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 5px;
 }
 
-/* Update bottom number positioning */
 .flip-card .bottom .bottom-number,
 .flip-card .next-bottom .bottom-number {
     position: absolute;
     width: 100%;
-    height: 120px;
-    /* Reduced from 240px */
-    font-size: 120px;
-    /* Reduced from 240px */
-    top: -1%;
-    /* Adjust position within smaller container */
+    height: 100%;
+    top: 0;
     line-height: 0;
-}
-
-/* Add shadow for depth */
-.flip-card .top,
-.flip-card .next-top {
-    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.2);
-}
-
-.flip-card .bottom,
-.flip-card .next-bottom {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 5px;
 }
 
 .flip-card .top {
-    top: 0;
-    border-bottom: 2px solid #ddd;
-}
-
-.flip-card .bottom {
-    bottom: 0;
-
+    z-index: 2;
+    transform-origin: bottom;
+    backface-visibility: hidden;
 }
 
 .flip-card .next-top {
-    top: 0;
     transform-origin: bottom;
     transform: rotateX(90deg);
     opacity: 0;
+    z-index: 1;
+    backface-visibility: hidden;
+}
+
+.flip-card .bottom {
+    z-index: 1;
+    backface-visibility: hidden;
 }
 
 .flip-card .next-bottom {
-    bottom: 0;
+    z-index: 2;
     opacity: 0;
+    transform: rotateX(-90deg);
+    transform-origin: top;
+    backface-visibility: hidden;
 }
 
 .flip-card.flip .top {
-    transform-origin: bottom;
     animation: flipTop 0.6s ease-in forwards;
 }
 
@@ -277,298 +280,291 @@ Flip Clock Styles
 }
 
 .flip-card.flip .bottom {
-    opacity: 0;
+    animation: hideBottom 0.6s steps(1) forwards;
 }
 
 .flip-card.flip .next-bottom {
-    opacity: 1;
-}
-
-.flip-card .top,
-.flip-card .next-top {
-    z-index: 2;
-    /* Ensure top card is above bottom */
-    transform-origin: bottom;
-    backface-visibility: hidden;
-}
-
-.flip-card .bottom,
-.flip-card .next-bottom {
-    z-index: 1;
-    /* Keep bottom below */
-    backface-visibility: hidden;
+    animation: revealNextBottom 0.6s steps(1) forwards;
 }
 
 @keyframes flipTop {
-    0% {
-        transform: rotateX(0deg);
-        z-index: 2;
-    }
-
-    100% {
-        transform: rotateX(-180deg);
-        z-index: 0;
-    }
+    0% { transform: rotateX(0deg); opacity: 1; z-index: 4;}
+    100% { transform: rotateX(-180deg); opacity: 1; z-index: 4;}
 }
 
 @keyframes flipNextTop {
-    0% {
-        transform: rotateX(180deg);
-        opacity: 0;
-        z-index: 1;
-    }
-
-    100% {
-        transform: rotateX(0deg);
-        opacity: 1;
-        z-index: 2;
-    }
+    0% { transform: rotateX(180deg); opacity: 0; z-index: 3;}
+    50% { opacity: 1; }
+    100% { transform: rotateX(0deg); opacity: 1; z-index: 3;}
 }
 
-/* Update separator size */
+@keyframes hideBottom {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes revealNextBottom {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
 .separator {
-    font-size: 120px;
-    /* Reduced from 240px */
-    margin: 0 10px;
-    /* Reduced from 20px */
+    font-size: 3rem;
+    margin: 0 8px;
+    color: #eee;
 }
 
 /* -------------------------
-Circular Clock Styles
+Circular Clock Styles (No Change)
 ------------------------- */
 .circular-clock {
+    display: flex;
     gap: 20px;
+    align-items: center;
+    width: auto;
+    height: auto;
 }
 
 .circular-clock .circle {
     position: relative;
     width: 100px;
     height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .circular-clock svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
     transform: rotate(-90deg);
 }
 
 .circular-clock circle {
     fill: none;
-    stroke-width: 6;
+    stroke-width: 8;
     stroke-linecap: round;
-    transition: stroke-dasharray 0.5s;
+    transition: stroke-dasharray 0.3s ease-out;
 }
 
-/* Background circles */
-.circular-clock .hours circle:nth-child(1),
-.circular-clock .minutes circle:nth-child(1),
-.circular-clock .seconds circle:nth-child(1) {
-    stroke: #333333;
+.circular-clock circle:first-child {
+    stroke: rgba(255, 255, 255, 0.2);
 }
 
-/* Animated circles */
 .circular-clock .hours circle:nth-child(2) {
-    stroke: #ff3267;
+    stroke: #ff6b6b;
 }
 
 .circular-clock .minutes circle:nth-child(2) {
-    stroke: #ffcc00;
+    stroke: #4ecdc4;
 }
 
 .circular-clock .seconds circle:nth-child(2) {
-    stroke: #00ff00;
+    stroke: #45b7d1;
 }
 
 .circular-clock .text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 20px;
+    position: relative;
+    z-index: 1;
+    font-size: 1.5rem;
     font-weight: bold;
+    color: white;
 }
 
- /* -------------------------
-         Hourglass Clock Styles
-         ------------------------- */
-        .hourglass-clock {
-            flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            padding: 10px;
-        }
+/* -------------------------
+Hourglass Clock Styles (REFINED FOR CONNECTION & GLASS)
+------------------------- */
+.hourglass-clock {
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 10px;
+    width: auto;
+    height: auto;
+}
 
-        /* Container holding both chambers */
-        .hourglass {
-            position: relative;
-            width: 100px;
-            height: 220px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-        }
+.hourglass {
+    position: relative;
+    width: 120px;
+    height: 250px;
+    background: transparent;
+    overflow: hidden; /* Crucial for clipping sand */
+    border: none; /* Removed actual border from this element */
+    box-shadow: none; /* Removed shadow from this element */
+}
 
-        /* Each "chamber" is clipped into a trapezoid that meets in the middle */
-        .chamber {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            overflow: hidden;
-        }
+/* Visual glass frame: now a very distinct outline */
+.hourglass::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent; /* Glass itself is transparent */
+    /* **Increased border width and slightly adjusted color** */
+    border: transparent; 
+    border-radius: 5px;
+    /* Precise clip-path to define the hourglass glass shape */
+    clip-path: polygon(
+        15% 0%, 85% 0%,         /* Top edge */
+        100% 15%, 100% 45%,     /* Right top curve */
+        55% 50%, 45% 50%,       /* Neck points - define the narrowest part */
+        0% 45%, 0% 15%,         /* Left top curve */
+        15% 0%,                 /* Close top bulb path */
 
-        /* Top chamber: inverted trapezoid */
-        .top-chamber {
-            clip-path: polygon(0 0, 100% 0, 75% 100%, 25% 100%);
-            border: 4px solid #444;
-            border-bottom: none;
-            background: transparent;
-        }
+        /* To make the outline continuous around the neck and bottom bulb */
+        45% 50%, 55% 50%,       /* Retrace neck points for continuous outline */
+        100% 55%, 100% 85%,     /* Right bottom curve */
+        85% 100%, 15% 100%,     /* Bottom edge */
+        0% 85%, 0% 55%          /* Left bottom curve */
+    );
+    z-index: 5; /* Ensure it's above everything else */
+    /* **Added subtle inner shadow** */
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1), 0 0 15px rgba(0, 0, 0, 0.4); /* Outer shadow remains */
 
-        /* Bottom chamber: normal trapezoid */
-        .bottom-chamber {
-            clip-path: polygon(25% 0, 75% 0, 100% 100%, 0 100%);
-            border: 4px solid #444;
-            border-top: none;
-            background: transparent;
-        }
+}
 
-        /* Narrow neck between chambers (just a thin rectangle) */
-        .hourglass .neck {
-            position: absolute;
-            top: calc(50% - 2px);
-            width: 12px;
-            height: 4px;
-            background: #444;
-            z-index: 1;
-        }
+/* Removed old .glass-frame and .neck - they are replaced */
+.glass-frame, .neck {
+    display: none;
+}
 
-        /* The "sand" inside top and bottom: absolutely positioned and animated by JS */
-        .sand {
-            position: absolute;
-            left: 0;
-            width: 100%;
-            background-color: #f4c542;
-            transition: height 1s linear;
-            z-index: 0;
-        }
+.wood-cap {
+    width: 150px;
+    height: 15px;
+    background: linear-gradient(to right, #8b4513, #a0522d);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    position: relative;
+    z-index: 4; /* Above glass outline */
+}
 
-        /* Top‐chamber sand starts full (100%) and shrinks downward */
-        .top-sand {
-            bottom: 0;
-            height: 100%; /* JS will override */
-        }
+.top-wood-cap {
+    margin-bottom: -20px;
+}
 
-        /* Bottom‐chamber sand starts empty (0%) and grows upward */
-        .bottom-sand {
-            top: 0;
-            height: 0%;   /* JS will override */
-        }
+.bottom-wood-cap {
+    margin-top: -20px;
+}
 
-        /* Falling sand particles */
-        .sand-particle {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background-color: #f4c542;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 2;
-        }
+/* Chambers are containers for sand, defining their general area and clipping */
+.chamber {
+    position: absolute;
+    width: 100%;
+    height: 50%; /* Each chamber takes up half the hourglass height */
+    overflow: hidden; /* **CRUCIAL: Clips the sand inside** */
+    background: rgba(188, 186, 187, 0.195);
+    z-index: 1; /* Sand is below neck opening and glass frame */
+}
 
-        /* Hour‐dots container */
-        .hour-dots {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 6px;
-            max-width: 120px;
-        }
+.top-chamber {
+    top: 0;
+    left: 0;
+    /* This clip-path defines the *actual visible shape* of the sand for the top half.
+       The Y-coordinates (e.g., 98%) are tweaked to ensure smooth transition at the neck. */
+    clip-path: polygon(
+        15% 0%, 85% 0%,
+        100% 15%, 100% 45%,
+        55% 98%, 45% 98%, /* Neck points for top sand - now slightly below actual 50% line */
+        0% 45%, 0% 15%
+    );
+}
 
-        /* Each hour dot is a small circle */
-        .hour-dot {
-            width: 10px;
-            height: 10px;
-            background-color: #333;
-            border-radius: 50%;
-            opacity: 0.8;
-        }
+.bottom-chamber {
+    bottom: 0;
+    left: 0;
+    /* This clip-path defines the *actual visible shape* of the sand for the bottom half.
+       The Y-coordinates (e.g., 2%) are tweaked to ensure smooth transition at the neck. */
+    clip-path: polygon(
+        45% 2%, 55% 2%, /* Neck points for bottom sand - now slightly above actual 50% line */
+        100% 55%, 100% 85%,
+        85% 100%, 15% 100%,
+        0% 85%, 0% 55%
+    );
+}
 
-        .style-selector {
-            margin-top: 20px;
-        }
+/* Sand styling */
+.sand {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    background-color: #f4c542; /* Sand color */
+    transition: height 1s linear; /* Smooth height transition */
+    z-index: 0; /* Sand is the base layer */
+}
 
-        .style-selector select {
-            padding: 10px;
-            border-radius: 8px;
-            border: none;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-size: 16px;
-        }
+.top-sand {
+    bottom: 0; /* Aligned to the bottom of its chamber - remains the same */
+    height: 100%; /* JS controls this percentage */
+    clip-path: polygon(
+        15% 0%, 85% 0%,
+        100% 15%, 100% 45%,
+        55% 98%, 45% 98%,
+        0% 45%, 0% 15%
+    );
+}
 
-        .style-selector select option {
-            background: #333;
-            color: white;
-        }
+.bottom-sand {
+   bottom: 0; /* **CHANGED from top: 0 to bottom: 0** */
+    height: 0%; /* JS controls this percentage, starts empty */
+    /* **NEW: Set transform origin to the top to make it grow from the top** */
+    transform-origin: top center;
+    clip-path: polygon(
+        45% 2%, 55% 2%, /* Neck points */
+        100% 55%, 100% 85%,
+        85% 100%, 15% 100%,
+        0% 85%, 0% 55%
+    );
+}
 
-        /* Circular Clock Styles */
-        .circular-clock {
-            flex-direction: column;
-            gap: 20px;
-        }
+/* New: Hourglass neck opening for visual flow. Made truly transparent. */
+.hourglass .neck-opening {
+    position: absolute;
+    top: calc(50% - 2px); /* Position it at the center of hourglass */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px; /* Width of the opening */
+    height: 4px; /* Small height for the "neck" */
+    background: rgba(222, 22, 22, 0); /* **MADE TRANSPARENT** */
+    border-radius: 2px;
+    z-index: 3; /* Above sand, but below glass frame */
+}
 
-        .circular-time {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
+.sand-particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background-color: #f4c542;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 2; /* Above main sand, below glass frame */
+}
 
-        .circle {
-            position: relative;
-            width: 80px;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+.hour-dots {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    max-width: 180px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 10px;
+    margin: 0 auto;
+}
 
-        .circle svg {
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            transform: rotate(-90deg);
-        }
+.hour-dot {
+    width: 15px;
+    height: 15px;
+    background-color: #777;
+    border-radius: 50%;
+    opacity: 0.7;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
 
-        .circle svg circle {
-            fill: none;
-            stroke-width: 8;
-            stroke-linecap: round;
-        }
-
-        .circle svg circle:first-child {
-            stroke: rgba(255, 255, 255, 0.2);
-        }
-
-        .circle.hours svg circle:nth-child(2) {
-            stroke: #ff6b6b;
-            stroke-dasharray: 0 283;
-            transition: stroke-dasharray 0.3s ease;
-        }
-
-        .circle.minutes svg circle:nth-child(2) {
-            stroke: #4ecdc4;
-            stroke-dasharray: 0 283;
-            transition: stroke-dasharray 0.3s ease;
-        }
-
-        .circle.seconds svg circle:nth-child(2) {
-            stroke: #45b7d1;
-            stroke-dasharray: 0 283;
-            transition: stroke-dasharray 0.3s ease;
-        }
-
-        .circle-text {
-            position: relative;
-            z-index: 1;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
+.hour-dot.active {
+    background-color: #00ff00;
+    box-shadow: 0 0 8px #00ff00, 0 0 15px #00ff00;
+    opacity: 1;
+}

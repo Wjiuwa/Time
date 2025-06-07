@@ -16,12 +16,10 @@
             <option value="flip">Flip Clock</option>
             <option value="circular">Circular Clock</option>
             <option value="hourglass">Hourglass Clock</option>
-
         </select>
     </div>
 
-    <div id="clockContainer">
-        <!-- Analog Clock -->
+    <div id="clockContainer" class="clock-container">
         <div class="clock analog-clock">
             <div class="hand hour"></div>
             <div class="hand minute"></div>
@@ -29,7 +27,6 @@
             <div class="center-dot"></div>
         </div>
 
-        <!-- Modern Digital Clock -->
         <div class="clock digital-clock">
             <div>
                 <span id="day">MON</span>
@@ -52,7 +49,6 @@
             </div>
         </div>
 
-        <!-- Flip Clock -->
         <div class="clock flip-clock">
             <div class="flip-card" id="flip-hours">
                 <div class="top">
@@ -104,66 +100,45 @@
             </div>
         </div>
 
-        <!-- Circular Clock -->
         <div class="clock circular-clock">
             <div class="circle hours">
                 <svg width="100" height="100">
-                    <circle cx="50" cy="50" r="45" stroke="#333" stroke-width="6"></circle>
+                    <circle cx="50" cy="50" r="45"></circle>
                     <circle cx="50" cy="50" r="45" stroke-dasharray="0 283"></circle>
                 </svg>
                 <div class="text" id="circular-hours">00</div>
             </div>
             <div class="circle minutes">
                 <svg width="100" height="100">
-                    <circle cx="50" cy="50" r="45" stroke="#333" stroke-width="6"></circle>
+                    <circle cx="50" cy="50" r="45"></circle>
                     <circle cx="50" cy="50" r="45" stroke-dasharray="0 283"></circle>
                 </svg>
                 <div class="text" id="circular-minutes">00</div>
             </div>
             <div class="circle seconds">
                 <svg width="100" height="100">
-                    <circle cx="50" cy="50" r="45" stroke="#333" stroke-width="6"></circle>
+                    <circle cx="50" cy="50" r="45"></circle>
                     <circle cx="50" cy="50" r="45" stroke-dasharray="0 283"></circle>
                 </svg>
                 <div class="text" id="circular-seconds">00</div>
             </div>
         </div>
 
-        <!-- Hourglass Clock -->
-        <div class="clock hourglass-clock active">
+        <div class="clock hourglass-clock">
+            <div class="wood-cap top-wood-cap"></div>
             <div class="hourglass">
-                <!-- Glass frame and wooden caps -->
-                <div class="glass-frame"></div>
-                <div class="wood-cap top"></div>
-                <div class="wood-cap bottom"></div>
-                
-                <!-- Glass highlights -->
-                <div class="glass-highlight"></div>
-                <div class="glass-highlight bottom"></div>
-                
-                <!-- Chambers -->
+                <div class="neck-opening"></div>
                 <div class="chamber top-chamber">
                     <div class="sand top-sand"></div>
                 </div>
-                
-                <div class="neck">
-                    <div class="sand-stream"></div>
-                </div>
-                
                 <div class="chamber bottom-chamber">
                     <div class="sand bottom-sand"></div>
                 </div>
             </div>
+            <div class="wood-cap bottom-wood-cap"></div>
             
-            <div class="time-display" id="current-time">00:00:00</div>
-            <div class="progress-info" id="progress-info">Hour Progress: 0%</div>
-            <div class="hour-dots" id="hourDots"></div>
         </div>
-
-
-
     </div>
-
     <script src="script.js"></script>
 </body>
 

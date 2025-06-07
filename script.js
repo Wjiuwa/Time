@@ -1,4 +1,3 @@
-
 /**
  * Clean & Modular Clock Implementation
  * Organized using classes and separated concerns for better maintainability
@@ -28,115 +27,131 @@ class TimeUtils {
     }
 }
 
+class SandParticleSystem {
+    constructor(hourglassElement) {
+        this.hourglass = hourglassElement;
+        this.particles = [];
+        this.isActive = false;
+        this.particleInterval = null;
 
- class SandParticleSystem {
-            constructor(hourglassElement) {
-                this.hourglass = hourglassElement;
-                this.particles = [];
-                this.isActive = false;
-                this.particleInterval = null;
-            }
+        // Constants for particle animation (adjusted for 1-hour flow)
+        // These are percentages relative to the hourglass container's dimensions.
+        // You might need to fine-tune these if your CSS dimensions change.
+        this.NECK_Y_PERCENT = 49; // Y position of neck in % relative to hourglass height, slightly above 50%
+        this.NECK_X_PERCENT = 50; // X position of neck in % relative to hourglass width
+        this.PARTICLE_START_Y_OFFSET = 5; // Start particles slightly above the neck, within the top sand
+        this.PARTICLE_MIN_DURATION = 1500; // ms - increased for longer flow
+        this.PARTICLE_MAX_DURATION_ADDITION = 1000; // ms - increased
+        this.PARTICLE_START_X_DRIFT_RANGE = 4; // %
+        this.PARTICLE_END_X_DRIFT_RANGE = 10; // %
+        this.CHAMBER_MIN_X_PERCENT = 15; // Inner-most x-coords of bottom chamber
+        this.CHAMBER_MAX_X_PERCENT = 85; // Outer-most x-coords of bottom chamber
+        this.BOTTOM_END_Y_PERCENT = 90; // Where particles settle in the bottom chamber
 
-            start() {
-                if (this.isActive) return;
-                this.isActive = true;
-                
-                // Create particles every 100ms when sand is falling
-                this.particleInterval = setInterval(() => {
-                    if (this.shouldCreateParticle()) {
-                        this.createParticle();
-                    }
-                }, 100);
-            }
+        // Adjust particle spawn rate for 1-hour duration.
+        // We want a steady stream over an hour, so a particle every ~200ms is reasonable.
+        this.PARTICLE_SPAWN_RATE_MS = 150; // Milliseconds between new particle spawns
+    }
 
-            stop() {
-                this.isActive = false;
-                if (this.particleInterval) {
-                    clearInterval(this.particleInterval);
-                    this.particleInterval = null;
-                }
-            }
+    start() {
+        if (this.isActive) return;
+        this.isActive = true;
 
-            shouldCreateParticle() {
-                // Only create particles if there's sand in the top chamber
-                const topSand = this.hourglass.querySelector('.top-sand');
-                if (!topSand) return false;
-                
-                const height = parseFloat(topSand.style.height) || 100;
-                return height > 0;
-            }
+        this.cleanup(); // Cleanup any existing particles first
 
-            createParticle() {
-                const particle = document.createElement('div');
-                particle.className = 'sand-particle';
-                
-                // Start position: center of the neck
-                const neckCenterX = 50; // 50% of hourglass width
-                const neckY = 108; // Position of neck in hourglass
-                
-                // Add some randomness to starting position
-                const startX = neckCenterX + (Math.random() - 0.5) * 8;
-                
-                particle.style.left = startX + '%';
-                particle.style.top = neckY + 'px';
-                
-                this.hourglass.appendChild(particle);
-                this.animateParticle(particle);
+        this.particleInterval = setInterval(() => {
+            if (this.shouldCreateParticle()) {
+                this.createParticle();
             }
+        }, this.PARTICLE_SPAWN_RATE_MS);
+    }
 
-            animateParticle(particle) {
-                const startTime = Date.now();
-                const duration = 800 + Math.random() * 400; // 800-1200ms fall time
-                const startY = 108;
-                const endY = 200; // Bottom of hourglass
-                
-                // Add slight horizontal drift
-                const startX = parseFloat(particle.style.left);
-                const drift = (Math.random() - 0.5) * 10;
-                const endX = Math.max(25, Math.min(75, startX + drift)); // Keep within chamber bounds
-                
-                const animate = () => {
-                    const elapsed = Date.now() - startTime;
-                    const progress = Math.min(elapsed / duration, 1);
-                    
-                    // Easing function for gravity effect
-                    const easeProgress = progress * progress;
-                    
-                    const currentY = startY + (endY - startY) * easeProgress;
-                    const currentX = startX + (endX - startX) * progress;
-                    
-                    particle.style.top = currentY + 'px';
-                    particle.style.left = currentX + '%';
-                    
-                    // Fade out as it reaches the bottom
-                    if (progress > 0.8) {
-                        particle.style.opacity = 1 - ((progress - 0.8) / 0.2);
-                    }
-                    
-                    if (progress < 1) {
-                        requestAnimationFrame(animate);
-                    } else {
-                        // Remove particle when animation is complete
-                        if (particle.parentNode) {
-                            particle.parentNode.removeChild(particle);
-                        }
-                    }
-                };
-                
-                requestAnimationFrame(animate);
-            }
-
-            cleanup() {
-                // Remove any remaining particles
-                const particles = this.hourglass.querySelectorAll('.sand-particle');
-                particles.forEach(particle => {
-                    if (particle.parentNode) {
-                        particle.parentNode.removeChild(particle);
-                    }
-                });
-            }
+    stop() {
+        this.isActive = false;
+        if (this.particleInterval) {
+            clearInterval(this.particleInterval);
+            this.particleInterval = null;
         }
+        this.cleanup();
+    }
 
+    shouldCreateParticle() {
+        const topSand = this.hourglass.querySelector('.top-sand');
+        if (!topSand) return false;
+
+        // Only create particles if there's sand in the top chamber AND it's flowing
+        const heightPercent = parseFloat(topSand.style.height);
+        // Only allow particle creation if the top sand is not completely empty
+        // Add a small threshold (e.g., 1%) to avoid particles when sand is at 0%
+        return heightPercent > 1;
+    }
+
+    createParticle() {
+        const particle = document.createElement('div');
+        particle.className = 'sand-particle';
+
+        // Start particles from just above the neck, within the top sand mass
+        // Use percentages for positioning
+        const startX = this.NECK_X_PERCENT + (Math.random() - 0.5) * this.PARTICLE_START_X_DRIFT_RANGE;
+        const startY = this.NECK_Y_PERCENT - this.PARTICLE_START_Y_OFFSET;
+
+        particle.style.left = `${startX}%`;
+        particle.style.top = `${startY}%`;
+
+        this.hourglass.appendChild(particle);
+        this.animateParticle(particle);
+    }
+
+    animateParticle(particle) {
+        const startTime = Date.now();
+        const duration = this.PARTICLE_MIN_DURATION + Math.random() * this.PARTICLE_MAX_DURATION_ADDITION;
+
+        const startY = parseFloat(particle.style.top);
+        const endY = this.BOTTOM_END_Y_PERCENT; // End Y position (bottom of hourglass, adjusted for visual)
+
+        const startX = parseFloat(particle.style.left);
+        const drift = (Math.random() - 0.5) * this.PARTICLE_END_X_DRIFT_RANGE;
+        // Ensure endX stays within the chamber bounds
+        const endX = Math.max(this.CHAMBER_MIN_X_PERCENT, Math.min(this.CHAMBER_MAX_X_PERCENT, startX + drift));
+
+        const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+
+            // Using ease-out for a more natural falling effect (gravity)
+            const easeProgress = 1 - Math.pow(1 - progress, 2); // Ease-out quadratic
+
+            const currentY = startY + (endY - startY) * easeProgress;
+            const currentX = startX + (endX - startX) * easeProgress;
+
+            particle.style.top = `${currentY}%`;
+            particle.style.left = `${currentX}%`;
+
+            if (progress > 0.8) {
+                // Fade out towards the end of its journey
+                particle.style.opacity = 1 - ((progress - 0.8) / 0.2);
+            }
+
+            if (progress < 1) {
+                this.animationFrameId = requestAnimationFrame(animate); // Store ID for potential cancellation
+            } else {
+                particle.remove(); // Remove particle once it reaches the bottom
+            }
+        };
+
+        requestAnimationFrame(animate);
+    }
+
+    cleanup() {
+        this.hourglass.querySelectorAll('.sand-particle').forEach(particle => {
+            if (particle.animationFrameId) {
+                cancelAnimationFrame(particle.animationFrameId); // Ensure previous animations are stopped
+            }
+            particle.remove();
+        });
+        this.particles = []; // Clear array of particles
+    }
+}
 
 class ClockRenderer {
     constructor() {
@@ -145,18 +160,15 @@ class ClockRenderer {
 
     cacheElements() {
         return {
-            // Digital clock elements
             day: document.getElementById('day'),
             hours: document.getElementById('hours'),
             minutes: document.getElementById('minutes'),
             seconds: document.getElementById('seconds'),
-            
-            // Analog clock elements
+
             analogHour: document.querySelector('.analog-clock .hour'),
             analogMinute: document.querySelector('.analog-clock .minute'),
             analogSecond: document.querySelector('.analog-clock .second'),
-            
-            // Circular clock elements
+
             circularHours: document.getElementById('circular-hours'),
             circularMinutes: document.getElementById('circular-minutes'),
             circularSeconds: document.getElementById('circular-seconds'),
@@ -167,72 +179,67 @@ class ClockRenderer {
     }
 
     updateDigital(time) {
-        if (this.elements.day) this.elements.day.textContent = time.day;
-        if (this.elements.hours) this.elements.hours.textContent = TimeUtils.formatTime(time.hours);
-        if (this.elements.minutes) this.elements.minutes.textContent = TimeUtils.formatTime(time.minutes);
-        if (this.elements.seconds) this.elements.seconds.textContent = TimeUtils.formatTime(time.seconds);
+        const { day, hours, minutes, seconds } = this.elements;
+        if (day) day.textContent = time.day;
+        if (hours) hours.textContent = TimeUtils.formatTime(time.hours);
+        if (minutes) minutes.textContent = TimeUtils.formatTime(time.minutes);
+        if (seconds) seconds.textContent = TimeUtils.formatTime(time.seconds);
     }
 
     updateAnalog(time) {
+        const { analogSecond, analogMinute, analogHour } = this.elements;
+
         const secondDegrees = TimeUtils.calculateDegrees(time.seconds, 60);
         const minuteDegrees = TimeUtils.calculateDegrees(time.minutes + time.seconds / 60, 60);
         const hourDegrees = TimeUtils.calculateDegrees(time.hours + time.minutes / 60, 12);
 
-        if (this.elements.analogSecond) {
-            this.elements.analogSecond.style.transform = `rotate(${secondDegrees}deg)`;
-        }
-        if (this.elements.analogMinute) {
-            this.elements.analogMinute.style.transform = `rotate(${minuteDegrees}deg)`;
-        }
-        if (this.elements.analogHour) {
-            this.elements.analogHour.style.transform = `rotate(${hourDegrees}deg)`;
-        }
+        if (analogSecond) analogSecond.style.transform = `rotate(${secondDegrees}deg)`;
+        if (analogMinute) analogMinute.style.transform = `rotate(${minuteDegrees}deg)`;
+        if (analogHour) analogHour.style.transform = `rotate(${hourDegrees}deg)`;
     }
 
     updateCircular(time) {
-        // Update text displays
-        if (this.elements.circularHours) {
-            this.elements.circularHours.textContent = TimeUtils.formatTime(time.hours);
-        }
-        if (this.elements.circularMinutes) {
-            this.elements.circularMinutes.textContent = TimeUtils.formatTime(time.minutes);
-        }
-        if (this.elements.circularSeconds) {
-            this.elements.circularSeconds.textContent = TimeUtils.formatTime(time.seconds);
-        }
+        const { circularHours, circularMinutes, circularSeconds, hourCircle, minuteCircle, secondCircle } = this.elements;
 
-        // Update progress circles
+        if (circularHours) circularHours.textContent = TimeUtils.formatTime(time.hours);
+        if (circularMinutes) circularMinutes.textContent = TimeUtils.formatTime(time.minutes);
+        if (circularSeconds) circularSeconds.textContent = TimeUtils.formatTime(time.seconds);
+
+        // Circular clocks typically show progress within their own cycle (e.g., 60s for seconds)
+        // For hours, use 12 to make it a 12-hour cycle visual.
         const hourProgress = TimeUtils.calculateProgress(time.hours % 12, 12);
         const minuteProgress = TimeUtils.calculateProgress(time.minutes, 60);
         const secondProgress = TimeUtils.calculateProgress(time.seconds, 60);
 
-        if (this.elements.hourCircle) {
-            this.elements.hourCircle.setAttribute('stroke-dasharray', `${hourProgress} 283`);
-        }
-        if (this.elements.minuteCircle) {
-            this.elements.minuteCircle.setAttribute('stroke-dasharray', `${minuteProgress} 283`);
-        }
-        if (this.elements.secondCircle) {
-            this.elements.secondCircle.setAttribute('stroke-dasharray', `${secondProgress} 283`);
-        }
+        if (hourCircle) hourCircle.setAttribute('stroke-dasharray', `${hourProgress} 283`);
+        if (minuteCircle) minuteCircle.setAttribute('stroke-dasharray', `${minuteProgress} 283`);
+        if (secondCircle) secondCircle.setAttribute('stroke-dasharray', `${secondProgress} 283`);
     }
-    updateHourglass(time) {
-    const dotsContainer = document.getElementById('hourDots');
-    if (!dotsContainer) return;
 
-    dotsContainer.innerHTML = '';
-    const hour = time.hours % 12 || 12;
+    updateHourglassDots(time) {
+        const dotsContainer = document.getElementById('hourDots');
+        if (!dotsContainer) return;
 
-    for (let i = 1; i <= 12; i++) {
-        const dot = document.createElement('div');
-        dot.classList.add('dot');
-        if (i <= hour) {
-            dot.classList.add('active');
+        // Clear existing dots. It's better to clear and re-render or update existing.
+        // For simplicity with variable number of dots, clearing is fine.
+        if (dotsContainer.children.length === 0) { // Only re-create if empty
+            for (let i = 0; i < 12; i++) { // 12 dots for 12 hours
+                const dot = document.createElement('div');
+                dot.classList.add('hour-dot');
+                dotsContainer.appendChild(dot);
+            }
         }
-        dotsContainer.appendChild(dot);
-    }
-}
+        const hourDots = Array.from(dotsContainer.children); // Get actual dot elements
 
+        const currentHour = time.hours % 12; // 0-11 for array indexing
+        hourDots.forEach((dot, index) => {
+            if (index === currentHour) {
+                dot.classList.add('active');
+            } else {
+                dot.classList.remove('active');
+            }
+        });
+    }
 }
 
 class FlipClock {
@@ -245,20 +252,18 @@ class FlipClock {
 
         if (formattedValue === currentValue) return;
 
-        // Update next-top
-        const nextTopElements = card.querySelectorAll('.next-top .top-number');
-        nextTopElements.forEach(el => el.textContent = formattedValue);
+        const nextTopNumbers = card.querySelectorAll('.next-top .top-number');
+        nextTopNumbers.forEach(el => el.textContent = formattedValue);
 
         card.classList.add('flip');
 
         setTimeout(() => {
-            // Update all bottom elements and current top
-            card.querySelectorAll('.bottom .bottom-number, .next-bottom .bottom-number')
-                .forEach(el => el.textContent = formattedValue);
-            
+            const bottomNumbers = card.querySelectorAll('.bottom .bottom-number, .next-bottom .bottom-number');
+            bottomNumbers.forEach(el => el.textContent = formattedValue);
+
             const topElement = card.querySelector('.top .top-number');
             if (topElement) topElement.textContent = formattedValue;
-            
+
             card.classList.remove('flip');
         }, 600);
     }
@@ -281,28 +286,30 @@ class ClockStyleManager {
         this.styleSelector?.addEventListener('change', (e) => {
             this.switchStyle(e.target.value);
         });
-        
-        // Get the currently selected value from dropdown
+
         const selectedStyle = this.styleSelector?.value || 'analog';
-        this.switchStyle(selectedStyle); // Use selected style instead of default
+        this.switchStyle(selectedStyle);
     }
 
     switchStyle(style) {
-        // Hide all clocks
         document.querySelectorAll('.clock').forEach(clock => {
             clock.classList.remove('active');
         });
 
-        // Show selected clock
         const targetClock = document.querySelector(`.${style}-clock`);
         if (targetClock) {
             targetClock.classList.add('active');
-            
-            // Update dropdown to match if it doesn't already
+            this.currentStyle = style;
+
+            // Ensure the select box also reflects the current style if it was changed programmatically
             if (this.styleSelector && this.styleSelector.value !== style) {
                 this.styleSelector.value = style;
             }
         }
+    }
+
+    getCurrentStyle() {
+        return this.currentStyle;
     }
 }
 
@@ -310,82 +317,87 @@ class MultiStyleClock {
     constructor() {
         this.renderer = new ClockRenderer();
         this.styleManager = new ClockStyleManager();
-        this.lastHour = null;
+        this.sandSystem = null;
         this.init();
     }
 
     init() {
-        this.update(); // Initial update
+        // Initial update
+        this.update();
+        // Set interval for continuous updates
         setInterval(() => this.update(), 1000);
+
+        // Listen for style changes from the manager to manage sand system activation/deactivation
+        this.styleManager.styleSelector.addEventListener('change', () => {
+            this.handleSandSystemActivation();
+        });
+    }
+
+    handleSandSystemActivation() {
+        const currentStyle = this.styleManager.getCurrentStyle();
+        if (currentStyle === 'hourglass') {
+            if (!this.sandSystem) {
+                const hourglassElement = document.querySelector('.hourglass');
+                if (hourglassElement) {
+                    this.sandSystem = new SandParticleSystem(hourglassElement);
+                    this.sandSystem.start();
+                }
+            }
+        } else {
+            if (this.sandSystem) {
+                this.sandSystem.stop();
+                this.sandSystem = null;
+            }
+        }
     }
 
     update() {
         const time = TimeUtils.getCurrentTime();
-        
-        // Update all clock styles
+
         this.renderer.updateDigital(time);
         this.renderer.updateAnalog(time);
         this.renderer.updateCircular(time);
-       
         FlipClock.update(time);
-        this.updateHourglass(time);
-        // Handle sand particle system for hourglass
-                if (this.styleManager.getCurrentStyle() === 'hourglass') {
-                    if (!this.sandSystem) {
-                        const hourglassElement = document.querySelector('.hourglass');
-                        if (hourglassElement) {
-                            this.sandSystem = new SandParticleSystem(hourglassElement);
-                            this.sandSystem.start();
-                        }
-                    }
-                } else {
-                    if (this.sandSystem) {
-                        this.sandSystem.stop();
-                        this.sandSystem.cleanup();
-                        this.sandSystem = null;
-                    }
-                }
-            
+
+        // Handle hourglass updates and sand particle system
+        if (this.styleManager.getCurrentStyle() === 'hourglass') {
+            this.updateHourglass(time);
+            // Ensure sand system is active if hourglass is selected
+            this.handleSandSystemActivation();
+        } else {
+            // Ensure sand system is stopped if hourglass is not selected
+            this.handleSandSystemActivation();
+        }
     }
 
-   updateHourglass(time) {
-                const topSand = document.querySelector('.hourglass .top-sand');
-                const bottomSand = document.querySelector('.hourglass .bottom-sand');
-                const dotsContainer = document.getElementById('hourDots');
-                if (!topSand || !bottomSand || !dotsContainer) return;
-                
-                // Calculate how many seconds have passed since the top of the current hour:
-                const elapsedSeconds = time.minutes * 60 + time.seconds;
-                const totalHourSecs = 60 * 60; // 3600 seconds per hour
-                
-                // Determine percentage of sand remaining in top chamber (100% → 0% over one hour)
-                const percentTop = Math.max(0, (1 - (elapsedSeconds / totalHourSecs))) * 100;
-                const percentBottom = Math.min(100, (elapsedSeconds / totalHourSecs)) * 100;
-                
-                // Smoothly transition heights once per second
-                topSand.style.height = `${percentTop}%`;
-                bottomSand.style.height = `${percentBottom}%`;
-                
-                // If we've rolled into a new hour, add a new dot
-                if (this.lastHour === null) {
-                    this.lastHour = time.hours;
-                    // First launch of page: populate one dot if hour > 0
-                    const initialCount = time.hours % 12 || 12;
-                    for (let i = 1; i <= initialCount; i++) {
-                        const dot = document.createElement('div');
-                        dot.className = 'hour-dot';
-                        dotsContainer.appendChild(dot);
-                    }
-                } else if (this.lastHour !== time.hours) {
-                    this.lastHour = time.hours;
-                    const dot = document.createElement('div');
-                    dot.className = 'hour-dot';
-                    dotsContainer.appendChild(dot);
-                }
-            }
-        }
+    updateHourglass(time) {
+        const topSand = document.querySelector('.hourglass .top-sand');
+        const bottomSand = document.querySelector('.hourglass .bottom-sand');
 
-// Initialize the clock system
+        if (!topSand || !bottomSand) return;
+
+        // Calculate total seconds into the current hour
+        // (e.g., at 1:30:00, this is 30 * 60 = 1800 seconds)
+        const currentSecondsInHour = (time.minutes * 60) + time.seconds;
+        const totalSecondsInHour = 3600; // 60 minutes * 60 seconds
+
+        // Calculate percentage of the hour that has passed
+        const percentageElapsed = currentSecondsInHour / totalSecondsInHour;
+
+        // Top sand reduces height from 100% to 0% as time passes
+        const percentTop = (1 - percentageElapsed) * 100;
+        // Bottom sand increases height from 0% to 100% as time passes
+        const percentBottom = percentageElapsed * 100;
+
+        topSand.style.height = `${Math.max(0, percentTop)}%`; // Ensure it doesn't go below 0
+        bottomSand.style.height = `${Math.min(100, percentBottom)}%`; // Ensure it doesn't go above 100
+
+        // Update hour dots based on the current hour
+        this.renderer.updateHourglassDots(time);
+    }
+}
+
+// Initialize the clock system when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
     new MultiStyleClock();
 });
