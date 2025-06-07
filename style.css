@@ -8,7 +8,7 @@
     --nebula-cyan: #004a4a;
     --planet-glow-start: #3a3a60;
     --planet-glow-end: #0a0a20; /* Matches background */
-    --highlight-color: #ffda4a; /* Existing highlight */
+    --highlight-color: #4aff9e; /* Existing highlight */
     --text-color: #fff; /* Existing text color */
     --glass-border-color: rgba(255, 255, 255, 0.2);
 }
@@ -707,12 +707,12 @@ Hourglass Clock Styles
     bottom: 0; /* Aligned to the bottom of its chamber */
     height: 100%; /* JS controls this percentage */
     /* Ensure the clip-path for sand matches its chamber for proper containment */
-    clip-path: polygon(
+    /* clip-path: polygon(
         15% 0%, 85% 0%,
         100% 15%, 100% 45%,
         55% 98%, 45% 98%,
         0% 45%, 0% 15%
-    );
+    ); */
 }
 
 .bottom-sand {
@@ -773,7 +773,7 @@ Hourglass Clock Styles
 .hourglass-dot.minute-mark-dot {
     width: 4px;
     height: 4px;
-    background-color: rgba(255, 255, 255, 0.15); /* More subtle for minute marks */
+    background-color: rgba(195, 18, 18, 0.15); /* More subtle for minute marks */
 }
 
 .hourglass-dot.minute-mark-dot.active-minute {
