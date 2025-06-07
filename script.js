@@ -49,7 +49,7 @@ class SandParticleSystem {
         this.BOTTOM_END_Y_PERCENT = 90; // Where particles settle in the bottom chamber
 
         // Adjust particle spawn rate for 1-hour duration.
-        // We want a steady stream over an hour, so a particle every ~200ms is reasonable.
+        // We want a steady stream over an hour, so a particle every ~150ms is reasonable.
         this.PARTICLE_SPAWN_RATE_MS = 150; // Milliseconds between new particle spawns
     }
 
@@ -80,9 +80,8 @@ class SandParticleSystem {
         if (!topSand) return false;
 
         // Only create particles if there's sand in the top chamber AND it's flowing
+        // We check for a height greater than a small threshold (e.g., 1%)
         const heightPercent = parseFloat(topSand.style.height);
-        // Only allow particle creation if the top sand is not completely empty
-        // Add a small threshold (e.g., 1%) to avoid particles when sand is at 0%
         return heightPercent > 1;
     }
 
@@ -144,9 +143,6 @@ class SandParticleSystem {
 
     cleanup() {
         this.hourglass.querySelectorAll('.sand-particle').forEach(particle => {
-            if (particle.animationFrameId) {
-                cancelAnimationFrame(particle.animationFrameId); // Ensure previous animations are stopped
-            }
             particle.remove();
         });
         this.particles = []; // Clear array of particles
@@ -156,6 +152,9 @@ class SandParticleSystem {
 class ClockRenderer {
     constructor() {
         this.elements = this.cacheElements();
+        // Initialize dot elements arrays
+        this.hourglassHourDots = [];
+        this.hourglassMinuteDots = [];
     }
 
     cacheElements() {
@@ -174,7 +173,9 @@ class ClockRenderer {
             circularSeconds: document.getElementById('circular-seconds'),
             hourCircle: document.querySelector('.circular-clock .circle.hours svg circle:nth-child(2)'),
             minuteCircle: document.querySelector('.circular-clock .circle.minutes svg circle:nth-child(2)'),
-            secondCircle: document.querySelector('.circular-clock .circle.seconds svg circle:nth-child(2)')
+            secondCircle: document.querySelector('.circular-clock .circle.seconds svg circle:nth-child(2)'),
+
+            hourglassDotsContainer: document.getElementById('hourDots'), // Container for all hourglass dots
         };
     }
 
@@ -205,8 +206,6 @@ class ClockRenderer {
         if (circularMinutes) circularMinutes.textContent = TimeUtils.formatTime(time.minutes);
         if (circularSeconds) circularSeconds.textContent = TimeUtils.formatTime(time.seconds);
 
-        // Circular clocks typically show progress within their own cycle (e.g., 60s for seconds)
-        // For hours, use 12 to make it a 12-hour cycle visual.
         const hourProgress = TimeUtils.calculateProgress(time.hours % 12, 12);
         const minuteProgress = TimeUtils.calculateProgress(time.minutes, 60);
         const secondProgress = TimeUtils.calculateProgress(time.seconds, 60);
@@ -216,29 +215,90 @@ class ClockRenderer {
         if (secondCircle) secondCircle.setAttribute('stroke-dasharray', `${secondProgress} 283`);
     }
 
-    updateHourglassDots(time) {
-        const dotsContainer = document.getElementById('hourDots');
+    // Initializes all the hourglass dots (called once on hourglass activation)
+    initHourglassDots() {
+        const dotsContainer = this.elements.hourglassDotsContainer;
         if (!dotsContainer) return;
 
-        // Clear existing dots. It's better to clear and re-render or update existing.
-        // For simplicity with variable number of dots, clearing is fine.
-        if (dotsContainer.children.length === 0) { // Only re-create if empty
-            for (let i = 0; i < 12; i++) { // 12 dots for 12 hours
-                const dot = document.createElement('div');
-                dot.classList.add('hour-dot');
-                dotsContainer.appendChild(dot);
-            }
-        }
-        const hourDots = Array.from(dotsContainer.children); // Get actual dot elements
+        // Clear any existing dots first
+        dotsContainer.innerHTML = '';
+        this.hourglassHourDots = [];
+        this.hourglassMinuteDots = [];
 
-        const currentHour = time.hours % 12; // 0-11 for array indexing
-        hourDots.forEach((dot, index) => {
-            if (index === currentHour) {
+        // Get the current dimensions of the hourglass container to position dots accurately
+        const containerWidth = dotsContainer.offsetWidth;
+        const containerHeight = dotsContainer.offsetHeight;
+
+        // Adjust dotRadius and center based on your hourglass visual.
+        // Aim to place dots around the 'waist' of the hourglass.
+        // Assuming hourglass is roughly circular around its middle.
+        const dotRadius = Math.min(containerWidth, containerHeight) / 2 * 0.9; // 90% of half the smaller dimension
+        const centerX = containerWidth / 2;
+        const centerY = containerHeight / 2;
+
+
+        for (let i = 0; i < 60; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('hourglass-dot'); // General class for all dots
+
+            const angle = (i / 60) * 360 - 90; // Angle for each minute, starting from top (-90 degrees offset)
+            const rad = (angle * Math.PI) / 180; // Convert to radians
+
+            const x = centerX + dotRadius * Math.cos(rad);
+            const y = centerY + dotRadius * Math.sin(rad);
+
+            // Determine dot size for centering
+            const dotSize = (i % 5 === 0) ? 6 : 4; // Hour marks are larger
+            dot.style.width = `${dotSize}px`;
+            dot.style.height = `${dotSize}px`;
+
+            // Position the dot, offsetting by half its width/height to center it
+            dot.style.left = `${x - dotSize / 2}px`;
+            dot.style.top = `${y - dotSize / 2}px`;
+
+
+            if (i % 5 === 0) { // Every 5th dot is an hour mark (0, 5, 10, ..., 55 minutes)
+                dot.classList.add('hour-mark-dot');
+                this.hourglassHourDots.push(dot); // Keep reference to hour marks
+            }
+            this.hourglassMinuteDots.push(dot); // Keep reference to all 60 minute marks
+            dotsContainer.appendChild(dot);
+        }
+    }
+
+
+    updateHourglassDots(time) {
+        // Ensure dots are initialized before updating their state
+        if (this.hourglassMinuteDots.length === 0 && this.elements.hourglassDotsContainer && this.elements.hourglassDotsContainer.children.length > 0) {
+            // If elements exist in DOM but our arrays are empty (e.g. page refresh), re-populate
+            this.initHourglassDots();
+        } else if (this.hourglassMinuteDots.length === 0) {
+            // If no dots are in DOM and arrays are empty, do nothing until init is called on activation
+            return;
+        }
+
+        // --- Activate Hour Dots ---
+        // `time.hours % 12` gives 0-11 for the current hour (e.g., 1 PM is 1, 12 AM/PM is 0/12)
+        const currentHourIndex = time.hours % 12;
+        
+        this.hourglassHourDots.forEach((dot, index) => {
+            if (index === currentHourIndex) { // If it's the current hour index (0-11)
                 dot.classList.add('active');
             } else {
                 dot.classList.remove('active');
             }
         });
+
+
+        // --- Activate Minute Dots ---
+        // First, deactivate all minute dots from the previous second
+        this.hourglassMinuteDots.forEach(dot => dot.classList.remove('active-minute'));
+
+        // Then, activate the current minute dot
+        const currentMinuteIndex = time.minutes; // 0-59
+        if (this.hourglassMinuteDots[currentMinuteIndex]) {
+            this.hourglassMinuteDots[currentMinuteIndex].classList.add('active-minute');
+        }
     }
 }
 
@@ -252,11 +312,14 @@ class FlipClock {
 
         if (formattedValue === currentValue) return;
 
+        // Set the 'next' value
         const nextTopNumbers = card.querySelectorAll('.next-top .top-number');
         nextTopNumbers.forEach(el => el.textContent = formattedValue);
 
+        // Start the flip animation
         card.classList.add('flip');
 
+        // After animation, update current value and remove flip class
         setTimeout(() => {
             const bottomNumbers = card.querySelectorAll('.bottom .bottom-number, .next-bottom .bottom-number');
             bottomNumbers.forEach(el => el.textContent = formattedValue);
@@ -265,7 +328,7 @@ class FlipClock {
             if (topElement) topElement.textContent = formattedValue;
 
             card.classList.remove('flip');
-        }, 600);
+        }, 600); // Matches animation duration
     }
 
     static update(time) {
@@ -287,15 +350,18 @@ class ClockStyleManager {
             this.switchStyle(e.target.value);
         });
 
-        const selectedStyle = this.styleSelector?.value || 'analog';
+        // Set initial style based on dropdown or a default
+        const selectedStyle = this.styleSelector?.value || 'digital';
         this.switchStyle(selectedStyle);
     }
 
     switchStyle(style) {
+        // Deactivate all clocks
         document.querySelectorAll('.clock').forEach(clock => {
             clock.classList.remove('active');
         });
 
+        // Activate the selected clock
         const targetClock = document.querySelector(`.${style}-clock`);
         if (targetClock) {
             targetClock.classList.add('active');
@@ -322,15 +388,24 @@ class MultiStyleClock {
     }
 
     init() {
-        // Initial update
+        // Initial update to display current time immediately
         this.update();
-        // Set interval for continuous updates
+        // Set interval for continuous updates every second
         setInterval(() => this.update(), 1000);
 
-        // Listen for style changes from the manager to manage sand system activation/deactivation
+        // Listen for style changes from the manager to activate/deactivate sand system
         this.styleManager.styleSelector.addEventListener('change', () => {
             this.handleSandSystemActivation();
+            // Important: Re-initialize dots if hourglass is just activated
+            if (this.styleManager.getCurrentStyle() === 'hourglass') {
+                 this.renderer.initHourglassDots(); // Initialize dots only once on activation
+            }
         });
+
+        // Initial check in case hourglass is the default style on page load
+        if (this.styleManager.getCurrentStyle() === 'hourglass') {
+            this.renderer.initHourglassDots();
+        }
     }
 
     handleSandSystemActivation() {
@@ -348,6 +423,14 @@ class MultiStyleClock {
                 this.sandSystem.stop();
                 this.sandSystem = null;
             }
+            // Clear hourglass specific elements when switching away
+            const dotsContainer = document.getElementById('hourDots');
+            if (dotsContainer) {
+                dotsContainer.innerHTML = ''; // Clear dots when not hourglass
+                // Also clear dot references in renderer
+                this.renderer.hourglassHourDots = [];
+                this.renderer.hourglassMinuteDots = [];
+            }
         }
     }
 
@@ -363,10 +446,10 @@ class MultiStyleClock {
         if (this.styleManager.getCurrentStyle() === 'hourglass') {
             this.updateHourglass(time);
             // Ensure sand system is active if hourglass is selected
-            this.handleSandSystemActivation();
+            this.handleSandSystemActivation(); // This will ensure particles start if not already
         } else {
             // Ensure sand system is stopped if hourglass is not selected
-            this.handleSandSystemActivation();
+            this.handleSandSystemActivation(); // This will stop particles if active
         }
     }
 
@@ -377,7 +460,6 @@ class MultiStyleClock {
         if (!topSand || !bottomSand) return;
 
         // Calculate total seconds into the current hour
-        // (e.g., at 1:30:00, this is 30 * 60 = 1800 seconds)
         const currentSecondsInHour = (time.minutes * 60) + time.seconds;
         const totalSecondsInHour = 3600; // 60 minutes * 60 seconds
 
@@ -392,7 +474,7 @@ class MultiStyleClock {
         topSand.style.height = `${Math.max(0, percentTop)}%`; // Ensure it doesn't go below 0
         bottomSand.style.height = `${Math.min(100, percentBottom)}%`; // Ensure it doesn't go above 100
 
-        // Update hour dots based on the current hour
+        // Update hour and minute dots based on the current time
         this.renderer.updateHourglassDots(time);
     }
 }

@@ -1,0 +1,5 @@
+fix the color for the hour and minute indicator
+fix the sand dropping length 
+work on the <div class="nebula-background"></div>
+    <div class="distant-planet"></div>
+    <div class="foreground-particles"></div> in the css
