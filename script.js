@@ -37,7 +37,7 @@ class SandParticleSystem {
         // Constants for particle animation (adjusted for 1-hour flow)
         // These are percentages relative to the hourglass container's dimensions.
         // You might need to fine-tune these if your CSS dimensions change.
-        this.NECK_Y_PERCENT = 49; // Y position of neck in % relative to hourglass height, slightly above 50%
+        this.NECK_Y_PERCENT = 54; // Y position of neck in % relative to hourglass height, slightly above 50%
         this.NECK_X_PERCENT = 50; // X position of neck in % relative to hourglass width
         this.PARTICLE_START_Y_OFFSET = 5; // Start particles slightly above the neck, within the top sand
         this.PARTICLE_MIN_DURATION = 1500; // ms - increased for longer flow
@@ -46,7 +46,7 @@ class SandParticleSystem {
         this.PARTICLE_END_X_DRIFT_RANGE = 10; // %
         this.CHAMBER_MIN_X_PERCENT = 15; // Inner-most x-coords of bottom chamber
         this.CHAMBER_MAX_X_PERCENT = 85; // Outer-most x-coords of bottom chamber
-        this.BOTTOM_END_Y_PERCENT = 90; // Where particles settle in the bottom chamber
+        this.BOTTOM_END_Y_PERCENT = 100; // Where particles settle in the bottom chamber
 
         // Adjust particle spawn rate for 1-hour duration.
         // We want a steady stream over an hour, so a particle every ~150ms is reasonable.
@@ -236,7 +236,6 @@ class ClockRenderer {
         const centerX = containerWidth / 2;
         const centerY = containerHeight / 2;
 
-
         for (let i = 0; i < 60; i++) {
             const dot = document.createElement('div');
             dot.classList.add('hourglass-dot'); // General class for all dots
@@ -256,16 +255,18 @@ class ClockRenderer {
             dot.style.left = `${x - dotSize / 2}px`;
             dot.style.top = `${y - dotSize / 2}px`;
 
-
             if (i % 5 === 0) { // Every 5th dot is an hour mark (0, 5, 10, ..., 55 minutes)
                 dot.classList.add('hour-mark-dot');
                 this.hourglassHourDots.push(dot); // Keep reference to hour marks
+            } else {
+                // Add minute-mark-dot class for non-hour dots
+                dot.classList.add('minute-mark-dot');
             }
+            
             this.hourglassMinuteDots.push(dot); // Keep reference to all 60 minute marks
             dotsContainer.appendChild(dot);
         }
     }
-
 
     updateHourglassDots(time) {
         // Ensure dots are initialized before updating their state
@@ -289,7 +290,6 @@ class ClockRenderer {
             }
         });
 
-
         // --- Activate Minute Dots ---
         // First, deactivate all minute dots from the previous second
         this.hourglassMinuteDots.forEach(dot => dot.classList.remove('active-minute'));
@@ -301,7 +301,6 @@ class ClockRenderer {
         }
     }
 }
-
 class FlipClock {
     static updateCard(id, newValue) {
         const card = document.getElementById(id);

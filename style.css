@@ -9,7 +9,7 @@
     --planet-glow-start: #3a3a60;
     --planet-glow-end: #0a0a20; /* Matches background */
     --highlight-color: #4aff9e; /* Existing highlight */
-    --text-color: #fff; /* Existing text color */
+    --text-color: #ffffff; /* Existing text color */
     --glass-border-color: rgba(255, 255, 255, 0.2);
 }
 
@@ -348,7 +348,7 @@ Digital Clock Styles
 ------------------------- */
 .digital-clock {
     background: rgba(0, 0, 0, 0.7);
-    color: #00ff00; /* Neon green */
+    color: #ffffff; /* Neon green */
     padding: 20px 40px;
     border-radius: 15px;
     display: flex;
@@ -356,11 +356,11 @@ Digital Clock Styles
     gap: 15px;
     box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.6);
     font-family: 'Share Tech Mono', monospace; /* Monospace for digital look */
-    text-shadow: 0 0 8px #00ff00, 0 0 15px #00ff00; /* Intense neon glow */
+    text-shadow: 0 0 8px #ffffff, 0 0 15px #ffffff; /* Intense neon glow */
     width: auto;
     height: auto;
     max-width: 90%;
-    border: 1px solid rgba(0, 255, 0, 0.3); /* Subtle green border */
+    border: 1px solid rgba(255, 255, 255, 0.3); /* Subtle green border */
 }
 
 .digital-clock div {
@@ -722,7 +722,7 @@ Hourglass Clock Styles
     clip-path: polygon(
         45% 2%, 55% 2%,
         100% 55%, 100% 85%,
-        85% 100%, 15% 100%,
+        85% 100%, 15% 100%, 
         0% 85%, 0% 55%
     );
 }
@@ -743,11 +743,11 @@ Hourglass Clock Styles
 /* Hourglass Dots - new implementation */
 .dots-container {
     position: absolute;
-    top: 0;
+    top: 10;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 2; /* Below glass outline, above sand */
+    z-index:2; /* Below glass outline, above sand */
     pointer-events: none; /* Crucial to not block clicks on main hourglass */
 }
 
@@ -773,12 +773,12 @@ Hourglass Clock Styles
 .hourglass-dot.minute-mark-dot {
     width: 4px;
     height: 4px;
-    background-color: rgba(195, 18, 18, 0.15); /* More subtle for minute marks */
+    background-color: rgba(255, 255, 255, 0.15); /* Keep a subtle default if you like, or remove this if you want it to appear only when active */
 }
 
 .hourglass-dot.minute-mark-dot.active-minute {
-    background-color: var(--text-color); /* Bright white for active minute */
-    box-shadow: 0 0 3px var(--text-color), 0 0 6px var(--text-color);
+    background-color: var(--highlight-color); /* Use a red color for the active minute dot */
+    box-shadow: 0 0 6px var(--highlight-color), 0 0 12px var(--highlight-color);
 }
 
 /* Sand Particle System */
