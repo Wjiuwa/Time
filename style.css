@@ -282,7 +282,6 @@ Analog Clock Styles
     background: linear-gradient(145deg, #1a1a2e, #0f0f1c); /* Darker, gradient background */
     border: 5px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(0, 0, 0, 0.3);
-    position: relative; /* Essential for hand positioning */
 }
 
 .analog-clock::before { /* Center circle */
@@ -304,7 +303,6 @@ Analog Clock Styles
     left: 50%;
     transform-origin: bottom;
     background: var(--text-color); /* Default hand color */
-    transition: transform 0.3s ease-in-out;
     border-radius: 3px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
     z-index: 1;
@@ -395,9 +393,9 @@ Flip Clock Styles
 
 .flip-card {
     position: relative;
-    width: 80px;
+    width: 145px;
     height: 120px;
-    perspective: 500px;
+    perspective: 600px;
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
@@ -415,7 +413,6 @@ Flip Clock Styles
     font-size: 3rem;
     font-weight: bold;
     line-height: 120px; /* Adjusted to fit the number for both top/bottom halves */
-    border-radius: 10px;
     overflow: hidden;
 }
 
@@ -423,8 +420,8 @@ Flip Clock Styles
 .flip-card .next-top {
     top: 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 10;
+    border-bottom-right-radius: 10;
 }
 
 .flip-card .bottom,
@@ -445,7 +442,7 @@ Flip Clock Styles
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    padding-bottom: 5px;
+    padding-bottom: none;
 }
 
 .flip-card .bottom .bottom-number,
@@ -458,7 +455,7 @@ Flip Clock Styles
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    padding-top: 5px;
+    padding-top: none;
 }
 
 .flip-card .top {
